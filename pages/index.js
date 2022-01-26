@@ -1,35 +1,9 @@
 import { Box, Button, Text, TextField, Image } from '@skynexui/components';
 
-import appConfig from '../config.json';
+import React from 'react';
+import { useRouter } from 'next/router';
 
-function GlobalStyle() {
-    return (
-      <style global jsx>{`
-        * {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-          list-style: none;
-        }
-        body {
-          font-family: 'Open Sans', sans-serif;
-        }
-        /* App fit Height */ 
-        html, body, #__next {
-          min-height: 100vh;
-          display: flex;
-          flex: 1;
-        }
-        #__next {
-          flex: 1;
-        }
-        #__next > * {
-          flex: 1;
-        }
-        /* ./App fit Height */ 
-      `}</style>
-    );
-}
+import appConfig from '../config.json';
 
 function Title(props) {
 
@@ -49,11 +23,12 @@ function Title(props) {
 }
 
 export default function HomePage() {
-    const username = 'quatoo';
+    const [ username, setUsername ] = React.useState('qu');
+    const [ disabledSubmit, setDisabledSubmit ] = React.useState(true);
+    const router = useRouter();
   
     return (
       <>
-        <GlobalStyle />
         <Box
           styleSheet={{
             display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -80,6 +55,10 @@ export default function HomePage() {
             {/* Formulário */}
             <Box
               as="form"
+              onSubmit={(events) =>{
+                events.preventDefault();
+                router.push('/chat');
+              }}
               styleSheet={{
                 display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                 width: { xs: '100%', sm: '50%' }, textAlign: 'center', marginBottom: '32px',
@@ -100,10 +79,17 @@ export default function HomePage() {
                     backgroundColor: appConfig.theme.colors.neutrals[800],
                   },
                 }}
+                value={username}
+                onChange={(event) => {
+                    const value = event.target.value;
+                    setDisabledSubmit((value.length <= 2));
+                    setUsername(value);
+                }}
               />
               <Button
                 type='submit'
                 label='Entrar'
+                disabled={disabledSubmit}
                 fullWidth
                 buttonColors={{
                   contrastColor: appConfig.theme.colors.neutrals["000"],
