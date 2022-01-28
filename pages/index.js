@@ -23,8 +23,8 @@ function Title(props) {
 }
 
 export default function HomePage() {
-    const [ username, setUsername ] = React.useState('qu');
-    const [ disabledSubmit, setDisabledSubmit ] = React.useState(true);
+    const [ username, setUsername ] = React.useState('quatoo');
+    const [ disabledSubmit, setDisabledSubmit ] = React.useState(false);
     const router = useRouter();
   
     return (
@@ -57,7 +57,7 @@ export default function HomePage() {
               as="form"
               onSubmit={(events) =>{
                 events.preventDefault();
-                router.push('/chat');
+                router.push(`/chat?username=${username}`);
               }}
               styleSheet={{
                 display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
