@@ -1,23 +1,47 @@
 import { Box, Text, TextField, Image, Button } from '@skynexui/components';
 import React from 'react';
 import appConfig from '../config.json';
+import { createClient } from '@supabase/supabase-js'
+
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzMyNzk1OSwiZXhwIjoxOTU4OTAzOTU5fQ.oGnj4HZB84sBhllyxB3VPu1YZdYWAAXUOOfR0A132zI';
+const SUPABASE_URL = 'https://ujfgmyghmewhigvjhdgx.supabase.co';
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 export default function ChatPage() {
     const [message, setMessage] = React.useState('');
     const [messageList, setMessageList] = React.useState([]);
 
+    React.useEffect(() => {
+        supabaseClient
+            .from('messages')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .then(({ data }) => {
+                console.log('Dados da consulta:', data);
+                setMessageList(data);
+            });
+    }, []);
+
     function handleNewMessage(newMessage) {
         const message = {
-            id: messageList.length + 1,
             from: 'vanessametonini',
             text: newMessage,
         };
 
-        setMessageList([
-            message,
-            ...messageList,
-        ]);
-        setMessage('');
+        supabaseClient
+            .from('messages')
+            .insert([message])
+            .then(({ data }) => { 
+                
+                setMessageList([
+                    data[0],
+                    ...messageList,
+                ]);
+                setMessage('');
+
+                console.log({data})
+            });
+
     }
 
     return (
@@ -155,7 +179,7 @@ function MessageList(props) {
                                     display: 'inline-block',
                                     marginRight: '8px',
                                 }}
-                                src={`https://github.com/vanessametonini.png`}
+                                src={`https://github.com/${message.from}.png`}
                             />
                             <Text tag="strong">
                                 {message.from}
